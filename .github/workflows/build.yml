@@ -21,8 +21,8 @@ jobs:
           mkdir -p workspace
           cd workspace
           
-          # Clone OnePlus SM6375 Kernel Source
-          git clone --depth=1 https://github.com/OnePlusOSS/android_kernel_oneplus_sm6375 -b oneplus/sm6375_r_11.0 kernel_source
+          # Clone Kernel Source using reliable mirror
+          git clone --depth=1 https://github.com/LineageOS/android_kernel_oneplus_sm6375 -b lineage-21.0 kernel_source
           
           # Download AOSP Clang Toolchain
           mkdir -p clang

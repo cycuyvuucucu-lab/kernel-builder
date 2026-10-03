@@ -21,8 +21,8 @@ jobs:
           mkdir -p workspace
           cd workspace
           
-          # Clone Kernel Source using reliable mirror
-          git clone --depth=1 https://github.com/LineageOS/android_kernel_oneplus_sm6375 -b lineage-21.0 kernel_source
+          # Clone Reliable SM6375 Kernel Source
+          git clone --depth=1 https://github.com/android-linux-stable/sm6375 -b android-5.4 kernel_source || git clone --depth=1 https://github.com/pixel-experience/android_kernel_oneplus_sm6375 -b thirteen kernel_source
           
           # Download AOSP Clang Toolchain
           mkdir -p clang
@@ -42,8 +42,14 @@ jobs:
           export CLANG_TRIPLE=aarch64-linux-gnu-
           export CROSS_COMPILE=aarch64-linux-android-
 
-          # Defconfig for Nord CE 3 Lite (SM6375)
-          make O=out vendor/sm6375-perf_defconfig
+          # Defconfig for SM6375
+          if [ -f "arch/arm64/configs/vendor/sm6375-perf_defconfig" ]; then
+            make O=out vendor/sm6375-perf_defconfig
+          elif [ -f "arch/arm64/configs/vendor/sm6375_defconfig" ]; then
+            make O=out vendor/sm6375_defconfig
+          else
+            make O=out sm6375-perf_defconfig
+          fi
           
           # Build Process
           make -j$(nproc --all) O=out

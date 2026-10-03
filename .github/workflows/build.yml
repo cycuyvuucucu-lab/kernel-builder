@@ -13,20 +13,22 @@ jobs:
       - name: Install Dependencies
         run: |
           sudo apt update
-          sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5-dev libncursesw5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip bc python3 ccache
+          sudo apt install -y git-core gnupg flex bison build-essential zip curl zlib1g-dev gcc-multilib g++-multilib libc6-dev-i386 libncurses5-dev libncursesw5-dev x11proto-core-dev libx11-dev lib32z1-dev libgl1-mesa-dev libxml2-utils xsltproc unzip bc python3 ccache wget
 
       - name: Setup Toolchain & Kernel Source
         run: |
           mkdir workspace && cd workspace
           git clone https://github.com/OnePlusOSS/android_kernel_oneplus_sm6375 -b android14 kernel_source --depth=1
-          git clone https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r450784d.tar.gz -b clang
+          mkdir clang && cd clang
+          wget -q https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/main/clang-r450784d.tar.gz
+          tar -xf clang-r450784d.tar.gz
 
       - name: Build Kernel
         run: |
           cd workspace/kernel_source
           export ARCH=arm64
           export SUBARCH=arm64
-          export PATH="../clang/bin:$PATH"
+          export PATH="$(pwd)/../clang/bin:$PATH"
           make ARCH=arm64 vendor/sm6375_defconfig
           make -j$(nproc --all) ARCH=arm64 CC=clang CLANG_TRIPLE=aarch64-linux-gnu- CROSS_COMPILE=aarch64-linux-gnu- Image.gz-dtb
 
